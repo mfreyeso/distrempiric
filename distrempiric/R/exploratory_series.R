@@ -11,8 +11,6 @@ library(nycflights13)
 library(plotly)
 
 
-
-
 t <- seq(from=1, to=100)
 e <- rnorm(100, mean=0, sd=1)
 y <- 10 + (0.7 * t) + e
@@ -74,8 +72,8 @@ ui <- fluidPage(
       # tableOutput("contents")
       tabsetPanel(type = "tabs",
                   tabPanel("Summary", verbatimTextOutput("summary")),
-                  tabPanel("Plot", plotOutput("plotTimeSerie")),
-                  tabPanel("Histogram"),
+                  tabPanel("Plot", plotlyOutput("plotTimeSerie")),
+                  tabPanel("Histogram", plotlyOutput("histTimeSerie")),
                   tabPanel("Autocorrelation"),
                   tabPanel("Partial Autocorrelation")
       )
@@ -122,9 +120,12 @@ server <- function(input, output) {
     summary(dataset)
   })
 
-  output$plotTimeSerie <- renderPlot({
-    plot(y, type="l", xlim=c(0,120), ylim=c(0,120))
-    # p <- plot_ly(x =t, y =y, mode = 'lines', text = paste(t, "days from today"))
+  output$plotTimeSerie <- renderPlotly({
+    p <- plot_ly(x = ~t, y = ~y, mode = 'lines', text = paste(t, "days from today"))
+  })
+
+  output$histTimeSerie <- renderPlotly({
+    p <- plot_ly(x =~y, type = "histogram", histnorm = "probability")
   })
 
 }
