@@ -9,7 +9,23 @@
 library(shiny)
 library(nycflights13)
 library(plotly)
+library(dplyr)
 
+## JetBlue departure_delay and origin airport
+jetblue<-flights%>%filter(carrier=='B6')%>%
+  select(year:day,dep_delay,origin,dest,distance)%>%
+  group_by(month)%>%
+  summarize(mean_delay_dep=mean(dep_delay,na.rm=TRUE), #Departure Delay on average
+            mean_distance=mean(distance,na.rm = TRUE)) #Distance on average
+## AmericanAirlines departure_delay and origin airport
+americanairlines<-flights%>%filter(carrier=='AA')%>%
+  select(year:day,dep_delay,origin,dest,distance)%>%
+  group_by(month)%>%
+  summarize(mean_delay_dep=mean(dep_delay,na.rm=TRUE), #Deporture Delay on average
+            mean_distance=mean(distance,na.rm = TRUE)) #Distance on average
+
+#The main idea here is to figure out if a low cost airline has differences between a high-class airline
+#Podemos hacer un modelo con el tiempo y mirar si se ajusta bien
 
 t <- seq(from=1, to=100)
 e <- rnorm(100, mean=0, sd=1)
@@ -74,8 +90,10 @@ ui <- fluidPage(
                   tabPanel("Summary", verbatimTextOutput("summary")),
                   tabPanel("Plot", plotlyOutput("plotTimeSerie")),
                   tabPanel("Histogram", plotlyOutput("histTimeSerie")),
-                  tabPanel("Autocorrelation"),
-                  tabPanel("Partial Autocorrelation")
+                  tabPanel("Autocorrelation",plotlyOutput("acf")),
+                  tabPanel("Partial Autocorrelation",plotlyOutput("pacf")),
+                  tabPanel("Adjusted Linear",plotlyOutput('model')),
+                  tabPanel("Residuals Analysis",plotlyOutput("residuals"))
       )
 
     )
