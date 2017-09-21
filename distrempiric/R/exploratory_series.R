@@ -54,7 +54,7 @@ ui <- fluidPage(
       tags$hr(),
 
       # Input: Checkbox if file has header ----
-      checkboxInput("header", "Header", TRUE),
+      checkboxInput("header", "Header", FALSE),
 
       # Input: Select separator ----
       radioButtons("sep", "Separator",
@@ -90,8 +90,8 @@ ui <- fluidPage(
                   tabPanel("Summary", verbatimTextOutput("summary")),
                   tabPanel("Plot", plotlyOutput("plotTimeSerie")),
                   tabPanel("Histogram", plotlyOutput("histTimeSerie")),
-                  tabPanel("Autocorrelation",plotlyOutput("acf")),
-                  tabPanel("Partial Autocorrelation",plotlyOutput("pacf")),
+                  tabPanel("Autocorrelation", plotOutput("acfTimeSerie")),
+                  tabPanel("Partial Autocorrelation", plotOutput("pacfTimeSerie")),
                   tabPanel("Adjusted Linear",plotlyOutput('model')),
                   tabPanel("Residuals Analysis",plotlyOutput("residuals"))
       )
@@ -104,15 +104,20 @@ ui <- fluidPage(
 # Define server logic to read selected file ----
 server <- function(input, output) {
 
+
+  timeSerieObject <- reactive({
+    input$file1
+  })
+
   output$contents <- renderTable({
 
     # input$file1 will be NULL initially. After the user selects
     # and uploads a file, head of that data file by default,
     # or all rows if selected, will be shown.
 
-    req(input$file1)
+    # req(input$file1)
 
-    df <- read.csv(input$file1$datapath,
+    df <- read.csv(timeSerieObject()$datapath,
                    header = input$header,
                    sep = input$sep,
                    quote = input$quote)
@@ -127,15 +132,15 @@ server <- function(input, output) {
   })
 
   output$summary <- renderPrint({
-    req(input$file1)
+    # req(input$file1)
 
-    df <- read.csv(input$file1$datapath,
+    df <- read.csv(timeSerieObject()$datapath,
                    header = input$header,
                    sep = input$sep,
                    quote = input$quote)
 
-    dataset <- df
-    summary(dataset)
+    timeseries <- ts(df, frequency=12, start=c(1946,1))
+    time(timeseries)
   })
 
   output$plotTimeSerie <- renderPlotly({
@@ -146,6 +151,13 @@ server <- function(input, output) {
     p <- plot_ly(x =~y, type = "histogram", histnorm = "probability")
   })
 
+  output$acfTimeSerie <- renderPlot({
+    p <- acf(y)
+  })
+
+  output$pacfTimeSerie <- renderPlot({
+    p <- pacf(y)
+  })
 }
 
 # Create Shiny app ----
