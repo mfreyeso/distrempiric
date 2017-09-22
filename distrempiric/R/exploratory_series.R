@@ -36,7 +36,9 @@ y <- 10 + (0.7 * t) + e
 ui <- fluidPage(
 
   # App title ----
-  titlePanel("Exploratory Analysis of Time Series"),
+  headerPanel(
+    h3("Exploratory Analysis of Time Series")
+  ),
 
   # Sidebar layout with input and output definitions ----
   sidebarLayout(
@@ -49,9 +51,9 @@ ui <- fluidPage(
                 accept = c("text/csv",
                            "text/comma-separated-values,text/plain",
                            ".csv")),
-
       # Horizontal line ----
       tags$hr(),
+      h5("Load File Options"),
 
       # Input: Checkbox if file has header ----
       checkboxInput("header", "Header", FALSE),
@@ -73,11 +75,14 @@ ui <- fluidPage(
       # Horizontal line ----
       tags$hr(),
 
-      # Input: Select number of rows to display ----
-      radioButtons("disp", "Display",
-                   choices = c(Head = "head",
-                               All = "all"),
-                   selected = "head")
+      h5("Time Series Parameters")
+      #
+      #
+      # # Input: Select number of rows to display ----
+      # radioButtons("disp", "Display",
+      #              choices = c(Head = "head",
+      #                          All = "all"),
+      #              selected = "head")
 
     ),
 
@@ -104,59 +109,65 @@ ui <- fluidPage(
 # Define server logic to read selected file ----
 server <- function(input, output) {
 
+  getTimeSerie <- function(){
+    if(!is.null(input$file1)) {
+      df <- read.csv(input$file1$datapath,
+                     header = input$header,
+                     sep = input$sep,
+                     quote = input$quote)
+
+      timeseries <- ts(df, frequency=12, start=c(1946,1))
+      return(timeseries)
+    }
+  }
 
   timeSerieObject <- reactive({
-    input$file1
+    getTimeSerie()
   })
-
-  output$contents <- renderTable({
-
-    # input$file1 will be NULL initially. After the user selects
-    # and uploads a file, head of that data file by default,
-    # or all rows if selected, will be shown.
-
-    # req(input$file1)
-
-    df <- read.csv(timeSerieObject()$datapath,
-                   header = input$header,
-                   sep = input$sep,
-                   quote = input$quote)
-
-    if(input$disp == "head") {
-      return(head(df))
-    }
-    else {
-      return(df)
-    }
-
-  })
+#
+#   output$contents <- renderTable({
+#
+#     # input$file1 will be NULL initially. After the user selects
+#     # and uploads a file, head of that data file by default,
+#     # or all rows if selected, will be shown.
+#
+#     # req(input$file1)
+#
+#     df <- read.csv(timeSerieObject()$datapath,
+#                    header = input$header,
+#                    sep = input$sep,
+#                    quote = input$quote)
+#     return(df)
+#
+#   })
 
   output$summary <- renderPrint({
-    # req(input$file1)
-
-    df <- read.csv(timeSerieObject()$datapath,
-                   header = input$header,
-                   sep = input$sep,
-                   quote = input$quote)
-
-    timeseries <- ts(df, frequency=12, start=c(1946,1))
-    time(timeseries)
+      if(!is.null(timeSerieObject())){
+        timeserie <- timeSerieObject()
+        summary(timeserie)
+      }
   })
 
   output$plotTimeSerie <- renderPlotly({
-    p <- plot_ly(x = ~t, y = ~y, mode = 'lines', text = paste(t, "days from today"))
+    if(!is.null(timeSerieObject())){
+      timeserie <- timeSerieObject()
+      p <- plot_ly(x = ~time(timeserie), y = ~timeserie, mode = 'lines', text = paste(time(timeserie), "days from today"))
+    }
   })
 
   output$histTimeSerie <- renderPlotly({
-    p <- plot_ly(x =~y, type = "histogram", histnorm = "probability")
+    timeserie <- timeSerieObject()
+    p <- plot_ly(x =~timeserie, type = "histogram", histnorm = "probability")
   })
 
   output$acfTimeSerie <- renderPlot({
-    p <- acf(y)
+    timeserie <- timeSerieObject()
+    p <- acf(timeserie)
   })
 
   output$pacfTimeSerie <- renderPlot({
-    p <- pacf(y)
+    timeserie <- timeSerieObject()
+    p <- pacf(timeserie)
   })
 }
 
