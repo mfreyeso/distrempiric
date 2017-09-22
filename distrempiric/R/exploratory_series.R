@@ -91,12 +91,16 @@ ui <- fluidPage(
                   "Select TimeSeries Frequency:",
                   min = 1,  max = 365, value = 7),
 
-
-      # selectInput(inputId = "column",
-      #             label = "Choose a column:",
-      #             choices = c("rock", "pressure", "cars"))
-
       htmlOutput("selectColumn")
+
+
+      # sliderInput("startSubset",
+      #             "Select TimeSeries Inital Value:",
+      #             min = 1,  max = 365, value = 7),
+
+      # sliderInput("startSet",
+      #             "Select TimeSeries Start:",
+      #             min = 1,  max = 365, value = 7),
 
     ),
 
@@ -135,7 +139,8 @@ server <- function(input, output) {
 
   getTimeSerie <- function(){
     if(!is.null(getFileObject())) {
-      timeseries <- ts(getFileObject(), frequency=12, start=c(1946,1))
+      print(input$columnSerie)
+      timeseries <- ts(getFileObject()[input$columnSerie], frequency=input$freq, start=c(1,1))
       return(timeseries)
     }
   }
@@ -143,23 +148,6 @@ server <- function(input, output) {
   timeSerieObject <- reactive({
     getTimeSerie()
   })
-
-#
-#   output$contents <- renderTable({
-#
-#     # input$file1 will be NULL initially. After the user selects
-#     # and uploads a file, head of that data file by default,
-#     # or all rows if selected, will be shown.
-#
-#     # req(input$file1)
-#
-#     df <- read.csv(timeSerieObject()$datapath,
-#                    header = input$header,
-#                    sep = input$sep,
-#                    quote = input$quote)
-#     return(df)
-#
-#   })
 
   output$selectColumn <- renderUI({
     selectInput("columnSerie", "Select your choice", names(getFileObject()))
