@@ -75,7 +75,7 @@ ui <- fluidPage(
       # Horizontal line ----
       tags$hr(),
 
-      h5("Time Series Parameters")
+      h5("Time Series Parameters"),
       #
       #
       # # Input: Select number of rows to display ----
@@ -83,6 +83,12 @@ ui <- fluidPage(
       #              choices = c(Head = "head",
       #                          All = "all"),
       #              selected = "head")
+
+      # selectInput(inputId = "column",
+      #             label = "Choose a column:",
+      #             choices = c("rock", "pressure", "cars"))
+
+      htmlOutput("selectColumn")
 
     ),
 
@@ -109,14 +115,19 @@ ui <- fluidPage(
 # Define server logic to read selected file ----
 server <- function(input, output) {
 
-  getTimeSerie <- function(){
+  getFileObject <- function(){
     if(!is.null(input$file1)) {
       df <- read.csv(input$file1$datapath,
                      header = input$header,
                      sep = input$sep,
                      quote = input$quote)
+      return(df)
+    }
+  }
 
-      timeseries <- ts(df, frequency=12, start=c(1946,1))
+  getTimeSerie <- function(){
+    if(!is.null(getFileObject())) {
+      timeseries <- ts(getFileObject(), frequency=12, start=c(1946,1))
       return(timeseries)
     }
   }
@@ -124,6 +135,7 @@ server <- function(input, output) {
   timeSerieObject <- reactive({
     getTimeSerie()
   })
+
 #
 #   output$contents <- renderTable({
 #
@@ -140,6 +152,10 @@ server <- function(input, output) {
 #     return(df)
 #
 #   })
+
+  output$selectColumn <- renderUI({
+    selectInput("columnSerie", "Select your choice", names(getFileObject()))
+  })
 
   output$summary <- renderPrint({
       if(!is.null(timeSerieObject())){
