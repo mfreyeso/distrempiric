@@ -50,13 +50,14 @@ ui <- fluidPage(
                 multiple = TRUE,
                 accept = c("text/csv",
                            "text/comma-separated-values,text/plain",
-                           ".csv")),
+                           ".csv",
+                           ".dat")),
       # Horizontal line ----
       tags$hr(),
       h5("Load File Options"),
 
       # Input: Checkbox if file has header ----
-      checkboxInput("header", "Header", FALSE),
+      checkboxInput(inputId = "header", label = "Header", FALSE),
 
       # Input: Select separator ----
       radioButtons("sep", "Separator",
@@ -72,17 +73,23 @@ ui <- fluidPage(
                                "Single Quote" = "'"),
                    selected = '"'),
 
+      # Input: Select number of rows to display ----
+      radioButtons("disp", "Display",
+                   choices = c(Head = "head",
+                               All = "all"),
+                   selected = "head"),
+
       # Horizontal line ----
       tags$hr(),
 
-      h5("Time Series Parameters")
+      h5("Time Series Parameters"),
       #
       #
-      # # Input: Select number of rows to display ----
-      # radioButtons("disp", "Display",
-      #              choices = c(Head = "head",
-      #                          All = "all"),
-      #              selected = "head")
+      #
+      sliderInput("freq",
+                  "Select TimeSeries Frequency:",
+                  min = 1,  max = 365, value = 7)
+
 
     ),
 
