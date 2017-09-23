@@ -57,7 +57,7 @@ ui <- fluidPage(
       h5("Load File Options"),
 
       # Input: Checkbox if file has header ----
-      checkboxInput(inputId = "header", label = "Header", FALSE),
+      checkboxInput(inputId = "header", label = "Header", TRUE),
 
       # Input: Select separator ----
       radioButtons("sep", "Separator",
@@ -91,7 +91,7 @@ ui <- fluidPage(
                   "Select TimeSeries Frequency:",
                   min = 1,  max = 365, value = 7),
 
-      htmlOutput("selectColumn")
+      htmlOutput("selectColumn"),
 
 
       # sliderInput("startSubset",
@@ -102,7 +102,21 @@ ui <- fluidPage(
       #             "Select TimeSeries Start:",
       #             min = 1,  max = 365, value = 7),
 
+
+      # Input: Select number of rows to display ----
+      radioButtons("tmodel", "Model Type:",
+                   choices = c( None='none',
+                               Linear= "linear",
+                               Cuadratic = "cuadratic",
+                               Cubic="cubic"),
+                   selected = "linear")
+
+
+
     ),
+
+
+
 
     # Main panel for displaying outputs ----
     mainPanel(
@@ -113,8 +127,8 @@ ui <- fluidPage(
                   tabPanel("Summary", verbatimTextOutput("summary")),
                   tabPanel("Plot", plotlyOutput("plotTimeSerie")),
                   tabPanel("Histogram", plotlyOutput("histTimeSerie")),
-                  tabPanel("Autocorrelation", plotOutput("acfTimeSerie")),
-                  tabPanel("Partial Autocorrelation", plotOutput("pacfTimeSerie")),
+                  tabPanel("ACF", plotOutput("acfTimeSerie")),
+                  tabPanel("PACF", plotOutput("pacfTimeSerie")),
                   tabPanel("Adjusted Linear",plotlyOutput('model')),
                   tabPanel("Residuals Analysis",plotlyOutput("residuals"))
       )
@@ -150,7 +164,7 @@ server <- function(input, output) {
   })
 
   output$selectColumn <- renderUI({
-    selectInput("columnSerie", "Select your choice", names(getFileObject()))
+    selectInput("columnSerie", "Select a specific column to analyze:", names(getFileObject()))
   })
 
   output$summary <- renderPrint({
@@ -174,12 +188,16 @@ server <- function(input, output) {
 
   output$acfTimeSerie <- renderPlot({
     timeserie <- timeSerieObject()
-    p <- acf(timeserie)
+    p <- acf(timeserie,main='ACF Plot')
   })
 
   output$pacfTimeSerie <- renderPlot({
     timeserie <- timeSerieObject()
-    p <- pacf(timeserie)
+    p <- pacf(timeserie,main='PACF Plot')
+
+
+
+
   })
 }
 
