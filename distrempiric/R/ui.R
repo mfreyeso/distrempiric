@@ -1,35 +1,7 @@
-# Serie de Tiempo
-#
-# # Graphic of Time Serie
-#
-# Hist
-# Autocorrelacion
-# Autocorrelacion Parcial
-#
 library(shiny)
-library(nycflights13)
+# library(nycflights13)
 library(plotly)
 library(dplyr)
-
-## JetBlue departure_delay and origin airport
-jetblue<-flights%>%filter(carrier=='B6')%>%
-  select(year:day,dep_delay,origin,dest,distance)%>%
-  group_by(month)%>%
-  summarize(mean_delay_dep=mean(dep_delay,na.rm=TRUE), #Departure Delay on average
-            mean_distance=mean(distance,na.rm = TRUE)) #Distance on average
-## AmericanAirlines departure_delay and origin airport
-americanairlines<-flights%>%filter(carrier=='AA')%>%
-  select(year:day,dep_delay,origin,dest,distance)%>%
-  group_by(month)%>%
-  summarize(mean_delay_dep=mean(dep_delay,na.rm=TRUE), #Deporture Delay on average
-            mean_distance=mean(distance,na.rm = TRUE)) #Distance on average
-
-#The main idea here is to figure out if a low cost airline has differences between a high-class airline
-#Podemos hacer un modelo con el tiempo y mirar si se ajusta bien
-
-t <- seq(from=1, to=100)
-e <- rnorm(100, mean=0, sd=1)
-y <- 10 + (0.7 * t) + e
 
 
 # Define UI for data upload app ----
@@ -106,9 +78,9 @@ ui <- fluidPage(
       # Input: Select number of rows to display ----
       radioButtons("tmodel", "Model Type:",
                    choices = c( None='none',
-                               Linear= "linear",
-                               Cuadratic = "cuadratic",
-                               Cubic="cubic"),
+                                Linear= "linear",
+                                Cuadratic = "cuadratic",
+                                Cubic="cubic"),
                    selected = "linear")
     ),
 
@@ -126,74 +98,6 @@ ui <- fluidPage(
                   tabPanel("Adjusted Linear",plotlyOutput('model')),
                   tabPanel("Residuals Analysis",plotlyOutput("residuals"))
       )
-
     )
-
   )
 )
-
-# Define server logic to read selected file ----
-server <- function(input, output) {
-
-  getFileObject <- function(){
-    if(!is.null(input$file1)) {
-      df <- read.csv(input$file1$datapath,
-                     header = input$header,
-                     sep = input$sep,
-                     quote = input$quote)
-      return(df)
-    }
-  }
-
-  getTimeSerie <- function(){
-    if(!is.null(getFileObject())) {
-      print(input$columnSerie)
-      timeseries <- ts(getFileObject()[input$columnSerie], frequency=input$freq, start=c(1,1))
-      return(timeseries)
-    }
-  }
-
-  timeSerieObject <- reactive({
-    getTimeSerie()
-  })
-
-  output$selectColumn <- renderUI({
-    selectInput("columnSerie", "Select a specific column to analyze:", names(getFileObject()))
-  })
-
-  output$summary <- renderPrint({
-      if(!is.null(timeSerieObject())){
-        timeserie <- timeSerieObject()
-        summary(timeserie)
-      }
-  })
-
-  output$plotTimeSerie <- renderPlotly({
-    if(!is.null(timeSerieObject())){
-      timeserie <- timeSerieObject()
-      p <- plot_ly(x = ~time(timeserie), y = ~timeserie, mode = 'lines', text = paste(time(timeserie), "days from today"))
-    }
-  })
-
-  output$histTimeSerie <- renderPlotly({
-    timeserie <- timeSerieObject()
-    p <- plot_ly(x =~timeserie, type = "histogram", histnorm = "probability")
-  })
-
-  output$acfTimeSerie <- renderPlot({
-    timeserie <- timeSerieObject()
-    p <- acf(timeserie,main='ACF Plot')
-  })
-
-  output$pacfTimeSerie <- renderPlot({
-    timeserie <- timeSerieObject()
-    p <- pacf(timeserie,main='PACF Plot')
-
-
-
-
-  })
-}
-
-# Create Shiny app ----
-shinyApp(ui, server)

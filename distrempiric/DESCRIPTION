@@ -1,11 +1,17 @@
 Package: distrempiric
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Time Series Exploratory Analysis
 Version: 0.1.0
-Author: Juan Camilo
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Imports: shiny, plotly, dplyr
+Author: Juan Camilo Gaviria, Mario Fernando Reyes Ojeda
+Maintainer: Mario Fernando Reyes Ojeda <mareyeso@unal.edu.co>
+Description: Distrempiric is a tool for the analysis of time series.
+    The tool includes functions to perform exploratory analysis including graphs that make
+    it easier to observe the behavior, trend and seasonality. The user interface facilitates
+    the initial parameterization for the load file as well as the definition of the period
+    and frequency of the series. Complementary options are included to apply regression according to
+    a trend model of the time series and residual analysis.
+URL: https://github.com/mfreyeso/distrempiric
+License: MIT
 Encoding: UTF-8
 LazyData: true
