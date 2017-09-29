@@ -2,6 +2,7 @@ library(shiny)
 # library(nycflights13)
 library(plotly)
 library(dplyr)
+library(forecast)
 
 
 # Define UI for data upload app ----
@@ -95,8 +96,8 @@ ui <- fluidPage(
                   tabPanel("Histogram", plotlyOutput("histTimeSerie")),
                   tabPanel("ACF", plotOutput("acfTimeSerie")),
                   tabPanel("PACF", plotOutput("pacfTimeSerie")),
-                  tabPanel("Adjusted Linear",plotlyOutput('model')),
-                  tabPanel("Residuals Analysis",plotlyOutput("residuals"))
+                  tabPanel("Adjusted Linear",verbatimTextOutput('model')),
+                  tabPanel("Residuals Analysis",plotOutput("residuals"))
       )
     )
   )

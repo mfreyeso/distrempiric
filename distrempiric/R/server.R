@@ -55,4 +55,23 @@ server <- function(input, output) {
     timeserie <- timeSerieObject()
     p <- pacf(timeserie,main='PACF Plot')
   })
+
+  output$model <- renderPrint({
+    if(!is.null(timeSerieObject())){
+      timeserie <- timeSerieObject()
+      #t<-(seq(1,length(timeserie))
+      m<-auto.arima(timeserie)
+      arimaorder(m)
+    }
+  })
+  output$residuals <- renderPlot({
+    timeserie <- timeSerieObject()
+    par(mfrow=c(3,1))
+    m<-auto.arima(timeserie)
+    r<-plot(residuals(m),type="o",col='red')
+    p <- acf(residuals(m),main='ACF Plot')
+    q<- pacf(residuals(m),main='PACF Plot')
+
+  })
+
 }
