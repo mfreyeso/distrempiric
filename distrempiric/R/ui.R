@@ -71,7 +71,7 @@ ui <- fluidPage(
 
       # Input: Select number of rows to display ----
       radioButtons("tmodel", "Model Type:",
-                   choices = c( None='none',
+                   choices = c( BoxJenkins='box_jenkins',
                                 Linear= "linear",
                                 Cuadratic = "cuadratic",
                                 Cubic="cubic"),

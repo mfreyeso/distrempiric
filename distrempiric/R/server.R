@@ -59,9 +59,26 @@ server <- function(input, output) {
   output$model <- renderPrint({
     if(!is.null(timeSerieObject())){
       timeserie <- timeSerieObject()
-      #t<-(seq(1,length(timeserie))
-      m<-auto.arima(timeserie)
-      arimaorder(m)
+      t<-seq(1:length(timeserie))
+      tt<-t*t
+      ttt<-t*t*t
+      if(input$tmodel=="box_jenkins"){
+        #t<-(seq(1,length(timeserie))
+        m<-auto.arima(timeserie)
+        arimaorder(m)
+      }else if(input$tmodel=="linear"){
+        m<-lm(timeserie~t)
+        m
+      }
+      else if(input$tmodel=="cuadratic"){
+        m<-lm(timeserie~t+tt)
+        m
+      }
+      else if(input$tmodel=="cubic"){
+        m<-lm(timeserie~t+tt+ttt)
+        m
+      }
+
     }
   })
   output$residuals <- renderPlot({
