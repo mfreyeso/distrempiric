@@ -3,7 +3,7 @@ library(shiny)
 library(plotly)
 library(dplyr)
 library(forecast)
-
+library(data.table)
 
 # Define UI for data upload app ----
 ui <- fluidPage(
@@ -32,6 +32,8 @@ ui <- fluidPage(
       # Input: Checkbox if file has header ----
       checkboxInput(inputId = "header", label = "Header", TRUE),
 
+      htmlOutput("selectColumn"),
+
       # Input: Select separator ----
       radioButtons("sep", "Separator",
                    choices = c(Comma = ",",
@@ -46,12 +48,6 @@ ui <- fluidPage(
                                "Single Quote" = "'"),
                    selected = '"'),
 
-      # Input: Select number of rows to display ----
-      radioButtons("disp", "Display",
-                   choices = c(Head = "head",
-                               All = "all"),
-                   selected = "head"),
-
       # Horizontal line ----
       tags$hr(),
 
@@ -63,9 +59,6 @@ ui <- fluidPage(
       sliderInput("freq",
                   "Select TimeSeries Frequency:",
                   min = 1,  max = 365, value = 7),
-
-      htmlOutput("selectColumn"),
-
 
       # sliderInput("startSubset",
       #             "Select TimeSeries Inital Value:",
