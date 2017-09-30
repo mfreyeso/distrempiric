@@ -87,12 +87,35 @@ server <- function(input, output) {
 
   output$residuals <- renderPlot({
     timeserie <- timeSerieObject()
-    par(mfrow=c(3,1))
-    # m<-auto.arima(timeserie)
     m <- getModelSerie()
-    r<-plot(residuals(m),type="o",col='red')
-    p <- acf(residuals(m),main='ACF Plot')
-    q<- pacf(residuals(m),main='PACF Plot')
+    par(mfrow=c(2,2))
+    res<-residuals(m)
+    r<-plot(res,type="o",col='red',main = "Residuals")
+    hist(res,col='blue',probability = TRUE,breaks = 70,main="Hist of Residuals")
+    lines(density(res),col='red',lwd=3)
+    p <- acf(res,main='ACF Plot')
+    q<- pacf(res,main='PACF Plot')
+  })
+  output$forecast <- renderPlot({
+    timeserie <- timeSerieObject()
+    m <- getModelSerie()
+    y.for<-rep(0,20)
+    if(input$tmodel!='box_jenkins'){
+
+      t.for<-seq(length(timeserie),length(timeserie)+20)
+
+      y.for<-predict(m,h=8)
+
+      plot(y.for,type = 'l')
+
+    } else{
+      plot(forecast(m,200))
+    }
+
+    #plot(forecast(m,200))
+
+
+
   })
 
 }

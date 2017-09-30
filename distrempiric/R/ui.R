@@ -90,7 +90,8 @@ ui <- fluidPage(
                   tabPanel("ACF", plotOutput("acfTimeSerie")),
                   tabPanel("PACF", plotOutput("pacfTimeSerie")),
                   tabPanel("Adjusted Linear",verbatimTextOutput('model')),
-                  tabPanel("Residuals Analysis",plotOutput("residuals"))
+                  tabPanel("Residuals Analysis",plotOutput("residuals")),
+                  tabPanel("Forecast t+20",plotOutput("forecast"))
       )
     )
   )
