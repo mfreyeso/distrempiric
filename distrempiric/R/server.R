@@ -1,4 +1,12 @@
-# Define server logic to read selected file ----
+
+#' A Server Function
+#'
+#' This function allows you manage the logic controls and renders or bindings with statistics functions supported.
+#' @param input shiny input controls of frontend
+#' @param output shiny and plotly outputs of frontend
+#' @export
+#' server()
+
 server <- function(input, output) {
 
 #Function to obtain the main TS from an external file
@@ -130,12 +138,5 @@ server <- function(input, output) {
       lines(LimSup,col='darkred')
       grid()
     }
-
-
-
-
-
-
   })
-
 }

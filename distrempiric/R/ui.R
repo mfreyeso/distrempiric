@@ -1,14 +1,12 @@
 library(shiny)
-# library(nycflights13)
 library(plotly)
 library(dplyr)
 library(forecast)
-library(data.table)
 
-# Define UI for data upload app ----
+#' Define UI for data upload app ----
 ui <- fluidPage(
 
-  # App title ----
+  #' App title ----
   headerPanel(
     h3("Exploratory Analysis of Time Series")
   ),
@@ -54,27 +52,14 @@ ui <- fluidPage(
       h5("Time Series Parameters"),
 
       #
-      #
-      #
       sliderInput("freq",
                   "Select TimeSeries Frequency:",
                   min = 1,  max = 365, value = 7),
-
-      # sliderInput("startSubset",
-      #             "Select TimeSeries Inital Value:",
-      #             min = 1,  max = 365, value = 7),
-
-      # sliderInput("startSet",
-      #             "Select TimeSeries Start:",
-      #             min = 1,  max = 365, value = 7),
-
 
       # Input: Select number of rows to display ----
       radioButtons("tmodel", "Model Type:",
                    choices = c( BoxJenkins='box_jenkins',
                                 Linear= "linear"),
-                                #Cuadratic = "cuadratic",
-                                #Cubic="cubic"),
                    selected = "linear")
     ),
 

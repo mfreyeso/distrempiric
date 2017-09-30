@@ -1,1 +1,5 @@
 exportPattern("^[[:alpha:]]+")
+importFrom("graphics", "grid", "hist", "lines", "par", "plot")
+importFrom("stats", "acf", "coefficients", "density", "lm", "pacf",
+             "residuals", "time", "ts")
+importFrom("utils", "read.csv")
