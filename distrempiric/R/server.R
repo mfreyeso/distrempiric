@@ -9,7 +9,12 @@
 
 server <- function(input, output) {
 
-#Function to obtain the main TS from an external file
+#' File Object
+#'
+#' This function support the file object for all statistics functions used on distrempiric.
+#' @export
+#' getFileObject()
+
   getFileObject <- function(){
     if(!is.null(input$file1)) {
       df <- read.csv(input$file1$datapath,
@@ -20,7 +25,12 @@ server <- function(input, output) {
     }
   }
 
-#Convert the data into a TS object
+#' Time Serie
+#'
+#' This function allows you manipulate the time serie from file object.
+#' @export
+#' getTimeSerie()
+
   getTimeSerie <- function(){
     if(!is.null(getFileObject())) {
       print(input$columnSerie)
@@ -29,10 +39,17 @@ server <- function(input, output) {
     }
   }
 
-#reactive
+  #reactive
   timeSerieObject <- reactive({
     getTimeSerie()
   })
+
+
+#' Get Model Serie
+#'
+#' This function deliver the model generated from the option selected from user.
+#' @export
+#' getModelSerie()
 
   getModelSerie <- function(){
     m <- NULL
