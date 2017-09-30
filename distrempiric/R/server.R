@@ -1,6 +1,7 @@
 # Define server logic to read selected file ----
 server <- function(input, output) {
 
+#Function to obtain the main TS from an external file
   getFileObject <- function(){
     if(!is.null(input$file1)) {
       df <- read.csv(input$file1$datapath,
@@ -11,6 +12,7 @@ server <- function(input, output) {
     }
   }
 
+#Convert the data into a TS object
   getTimeSerie <- function(){
     if(!is.null(getFileObject())) {
       print(input$columnSerie)
@@ -19,6 +21,7 @@ server <- function(input, output) {
     }
   }
 
+#reactive
   timeSerieObject <- reactive({
     getTimeSerie()
   })
@@ -99,20 +102,37 @@ server <- function(input, output) {
   output$forecast <- renderPlot({
     timeserie <- timeSerieObject()
     m <- getModelSerie()
-    y.for<-rep(0,20)
-    if(input$tmodel!='box_jenkins'){
+    H<-20
+    y.for<-rep(0,H)
+    if(input$tmodel=='box_jenkins'){
+      plot(forecast(m,H))
+      grid()
 
-      t.for<-seq(length(timeserie),length(timeserie)+20)
+    } else if(input$tmodel=='linear'){
 
-      y.for<-predict(m,h=8)
+      y.for<-rep(NA,H+length(timeserie))
+      LimInf<-rep(NA,H+length(timeserie))
+      LimSup<-rep(NA,H+length(timeserie))
+      sigma<-0.2
 
-      plot(y.for,type = 'l')
+      for(i in length(timeserie):(length(timeserie)+H)){
+        y.for[i]<-coefficients(m)[1]+coefficients(m)[2]*i
+        LimInf[i]<-coefficients(m)[1]+coefficients(m)[2]*i-2*sigma*sqrt(i)
+        LimSup[i]<-coefficients(m)[1]+coefficients(m)[2]*i+2*sigma*sqrt(i)
+      }
 
-    } else{
-      plot(forecast(m,200))
+      y.for<-ts(y.for,frequency = input$freq,start=c(1,1))
+      LimInf<-ts(LimInf,frequency = input$freq,start=c(1,1))
+      LimSup<-ts(LimSup,frequency = input$freq,start=c(1,1))
+      plot(timeserie,type='l',col='red',ylim=c(min(timeserie,na.rm=TRUE),max(LimSup,na.rm=TRUE)),main='Forecasting 20 steps a-head')
+      lines(y.for, col='blue', lwd=2,type='l')
+      lines(LimInf,col='darkred')
+      lines(LimSup,col='darkred')
+      grid()
     }
 
-    #plot(forecast(m,200))
+
+
 
 
 
